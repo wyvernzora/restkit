@@ -21,6 +21,9 @@ function Endpoint(config, {
   post             = () => { },
   error            = () => { }
 }) {
+  if (!path) {
+    throw new Error("Missing parameter 'path'");
+  }
 
 
   /**
@@ -106,19 +109,19 @@ function Endpoint(config, {
       .value();
 
     /* Run the pre-request hook now */
-    run(req, pre);
+    run(fn, pre, req);
 
     /* Send out the request */
     let response;
     try {
       response = await Request(req);
     } catch (err) {
-      error.call(response, error, response);
+      run(fn, error, err, response);
       throw err; // Just in case we did not throw from error handler
     }
 
     /* Run the post-request hooks now */
-    run(response, post);
+    run(fn, post, response);
 
 
     return response.body;
@@ -128,7 +131,7 @@ function Endpoint(config, {
   /**
    * Attach parent config to the fn itself
    */
-  fn.config = config;
+  fn.config$ = config;
 
 
   return fn.bind(fn);
@@ -139,10 +142,10 @@ module.exports = Endpoint;
 /**
  * Runs a series of hook function with the specified context.
  */
-function run(context, hook) {
+function run(context, hook, ...args) {
   hook = [].concat(hook);
 
   for (const f of hook) {
-    f.call(context, context);
+    f.call(context, ...args);
   }
 }
