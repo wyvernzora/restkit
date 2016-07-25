@@ -5,6 +5,8 @@
  * @license MIT
  */
 const _            = require('lodash');
+const Resource     = require('./resource');
+const Endpoint     = require('./endpoint');
 
 
 
@@ -18,10 +20,10 @@ function RestKit(defaults, options, children) {
 
   /* Return a REST API client factory */
   return function(config) {
-    const client = { };
 
-    /* Apply default values */
-    config = _.defaults(config, defaults);
+    /* Clone config, and apply default values */
+    config = _.assign({ }, defaults, config);
+    const client = { config$: config };
 
     /* Make sure all required config arguments are there */
     for (const k of (options.required || [ ])) {
@@ -38,4 +40,10 @@ function RestKit(defaults, options, children) {
     return client;
   };
 }
+
+
+RestKit.Resource = Resource;
+RestKit.Endpoint = Endpoint;
+
+
 module.exports = RestKit;
