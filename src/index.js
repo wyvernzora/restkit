@@ -19,7 +19,7 @@ function RestKit(defaults, options, children) {
   }
 
   /* Return a REST API client factory */
-  return function(config) {
+  return function(config = { }) {
 
     /* Clone config, and apply default values */
     config = _.assign({ }, defaults, config);
@@ -27,7 +27,7 @@ function RestKit(defaults, options, children) {
 
     /* Make sure all required config arguments are there */
     for (const k of (options.required || [ ])) {
-      if (!config[k]) {
+      if (typeof config[k] === 'undefined') {
         throw new Error(`Missing required config parameter '${k}'`);
       }
     }

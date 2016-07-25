@@ -47,6 +47,12 @@
     "babel": "inherit"
   },
   "nyc": {
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "src/src/**"
+    ],
     "reporter": [
       "html",
       "lcov"

@@ -201,3 +201,14 @@ test('post-request hook', async t => {
   t.is(r.data.foo, 'bar');
 
 });
+
+
+test('no path', async t => {
+
+  const e = () => Endpoint(config, {
+    method: 'POST'
+  });
+
+  t.throws(e, "Missing parameter 'path'");
+
+});
