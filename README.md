@@ -13,12 +13,12 @@ need to worry about service-specific logic, while all plumbing and stuff is take
 
 ## Getting Started
 ```sh
-$ npm install restkit --save
+$ npm install rest-kit --save
 ```
 
 Then, in any JS file:
 ```js
-const RestKit = require('restkit');
+const RestKit = require('rest-kit');
 
 module.exports = RestKit({
   root: 'https://api.example.com/v1',
@@ -104,7 +104,7 @@ used for modifying global configuration.
 
 ### Passing API token in Authorization header
 ```js
-const RestKit = require('restkit');
+const RestKit = require('rest-kit');
 
 
 const api = RestKit({

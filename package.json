@@ -1,5 +1,5 @@
 {
-  "name": "restkit",
+  "name": "rest-kit",
   "version": "0.0.2",
   "description": "Tool kit for rapid development of REST API bindings.",
   "main": "lib/index.js",
