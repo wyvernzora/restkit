@@ -45,7 +45,7 @@ function Endpoint(config, {
    * Create the binding function
    * Signature: (...params, [data], [options])
    */
-  return async (...args) => {
+  const fn = async function(...args) {
     let data = { };
     let options = { };
 
@@ -124,6 +124,14 @@ function Endpoint(config, {
     return response.body;
   };
 
+
+  /**
+   * Attach parent config to the fn itself
+   */
+  fn.config = config;
+
+
+  return fn.bind(fn);
 }
 module.exports = Endpoint;
 
