@@ -109,6 +109,7 @@ function Endpoint(config, {
       .value();
 
     /* Run the pre-request hook now */
+    run(fn, config.pre, req);
     run(fn, pre, req);
 
     /* Send out the request */
@@ -121,6 +122,7 @@ function Endpoint(config, {
     }
 
     /* Run the post-request hooks now */
+    run(fn, config.post, response);
     run(fn, post, response);
 
 
@@ -143,6 +145,7 @@ module.exports = Endpoint;
  * Runs a series of hook function with the specified context.
  */
 function run(context, hook, ...args) {
+  if (!hook) { return; }
   hook = [].concat(hook);
 
   for (const f of hook) {
