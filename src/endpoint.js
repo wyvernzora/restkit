@@ -77,10 +77,13 @@ function Endpoint(config, {
       data[params[i]] = args[i];
     }
 
+    /* Determine if we are dealing with JSON */
+    const json = config.instance$.options$.json;
+
     /* Build out the base request data */
     const req = {
+      json,
       method,
-      json: true,
       uri: template(Object.assign({ }, config.params, data)),
       headers: options.headers || { },
       resolveWithFullResponse: true

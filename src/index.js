@@ -30,6 +30,11 @@ function RestKit(defaults, options, children) {
     options = { };
   }
 
+  /* Default options */
+  options = Object.assign({ }, options, {
+    json: true
+  });
+
   /* Return a REST API client factory */
   return function(config = { }) {
 

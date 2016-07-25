@@ -17,7 +17,7 @@ const config = {
   headers: {
     Authorization: 'basic cG9zdG1hbjpwYXNzd29yZA=='
   },
-  instance$: { options$: { } }
+  instance$: { options$: { json: true } }
 };
 
 
