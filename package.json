@@ -1,8 +1,11 @@
 {
-  "name": "rest-kit",
+  "name": "restkit",
   "version": "0.0.1",
-  "description": "Tool kit for creating REST API clients",
+  "description": "Tool kit for rapid development of REST API bindings.",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "test": "./node_modules/.bin/ava"
   },
