@@ -15,7 +15,7 @@ function Resource(spec, children = { }) {
      * Create endpoints
      */
     for (const key of Object.keys(spec)) {
-      res[key] = Endpoint(config, spec);
+      res[key] = Endpoint(config, spec[key]);
     }
 
 
