@@ -1,5 +1,5 @@
 /**
- * example/resources/methods.js
+ * resources/methods.js
  *
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT

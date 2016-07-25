@@ -1,5 +1,5 @@
 /**
- * example/resources/headers.js
+ * resources/headers.js
  *
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT

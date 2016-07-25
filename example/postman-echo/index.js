@@ -1,10 +1,10 @@
 /**
- * example/index.js
+ * index.js
  *
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT
  */
-const RestKit      = require('..');
+const RestKit      = require('../..');
 
 
 module.exports = RestKit({

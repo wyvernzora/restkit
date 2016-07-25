@@ -1,5 +1,5 @@
 /**
- * example/resources/auth.js
+ * resources/auth.js
  *
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT
