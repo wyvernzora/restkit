@@ -12,6 +12,16 @@ const Endpoint     = require('./endpoint');
 
 function RestKit(defaults, options, children) {
 
+  /* Require at least defaults.root */
+  if (!defaults.root) {
+    throw new Error("Missing required parameter 'defaults.root'");
+  }
+
+  /* Default headers */
+  if (!defaults.headers) {
+    defaults.headers = { };
+  }
+
   /* {options} is optional */
   if (!children) {
     children = options;
@@ -24,6 +34,11 @@ function RestKit(defaults, options, children) {
     /* Clone config, and apply default values */
     config = _.assign({ }, defaults, config);
     const client = { config$: config };
+
+    /* Run the oncreate() hook */
+    if (typeof options.oncreate === 'function') {
+      options.oncreate.call(client, client);
+    }
 
     /* Make sure all required config arguments are there */
     for (const k of (options.required || [ ])) {
