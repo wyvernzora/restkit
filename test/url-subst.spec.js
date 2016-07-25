@@ -6,7 +6,7 @@
  */
 const test         = require('ava');
 
-const UrlSubst     = require('../../src/util/url-subst');
+const UrlSubst     = require('../src/url-subst');
 
 
 test(t => {

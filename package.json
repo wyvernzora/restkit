@@ -51,6 +51,9 @@
     "babel": "inherit"
   },
   "nyc": {
+    "require": [
+      "babel-register"
+    ],
     "include": [
       "src/**/*.js"
     ],

@@ -76,3 +76,28 @@ test('missing config', t => {
   t.throws(f, "Missing required config parameter 'bar'");
 
 });
+
+
+test('missing root', t => {
+
+  const f = () => RestKit({ }, { });
+
+  t.throws(f, "Missing required parameter 'defaults.root'");
+
+});
+
+
+test('oncreate', t => {
+
+  const api = RestKit({
+    root: 'https://echo.getpostman.com',
+    headers: { }
+  }, {
+    oncreate() { this.config$.foo = 'bar'; }
+  }, { });
+
+  const client = api();
+
+  t.is(client.config$.foo, 'bar');
+
+});

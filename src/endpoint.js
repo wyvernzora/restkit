@@ -10,7 +10,7 @@
 const _            = require('lodash');
 const Debug        = require('debug')('restkit:endpoint');
 const Request      = require('request-promise');
-const UrlSubst     = require('./util/url-subst');
+const UrlSubst     = require('./url-subst');
 
 
 function Endpoint(config, {

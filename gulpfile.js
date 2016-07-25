@@ -4,10 +4,7 @@
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT
  */
-require('babel-core/register');
-
 const gulp         = require('gulp');
-const gutil        = require('gulp-util');
 
 const del          = require('del');
 const babel        = require('gulp-babel');
@@ -20,15 +17,13 @@ const sourcemaps   = require('gulp-sourcemaps');
 /*!
  * Default build target.
  */
-gulp.task('default', [ 'test' ]);
+gulp.task('default', ['build']);
 
 
 /*!
  * Delete previous builds.
  */
-gulp.task('clean', function() {
-  return del([ 'lib/**' ]);
-});
+gulp.task('clean', () => del(['lib/**']));
 
 
 /*!
@@ -46,7 +41,7 @@ const build = function() {
 
 };
 gulp.task('build', ['lint'], build);
-gulp.task('rebuild', [ 'relint' ], build);
+gulp.task('rebuild', ['relint'], build);
 
 
 /*!
@@ -68,6 +63,6 @@ gulp.task('relint', ['clean'], lint);
 /*!
  * Automatically rebuild on save.
  */
-gulp.task('watch', ['rebuild'], function() {
+gulp.task('watch', ['rebuild'], () => {
   gulp.watch('src/**/*.js', ['build']);
 });

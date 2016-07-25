@@ -2,5 +2,6 @@
   "presets": [
     "es2015-node4",
     "stage-3"
-  ]
+  ],
+  "sourceMaps": "inline"
 }
