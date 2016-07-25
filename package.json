@@ -39,6 +39,7 @@
     "nyc": "^7.1.0-candidate3"
   },
   "dependencies": {
+    "debug": "^2.2.0",
     "lodash": "^4.14.0",
     "request": "^2.74.0",
     "request-promise": "^4.0.2"

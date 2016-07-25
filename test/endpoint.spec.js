@@ -16,7 +16,8 @@ const config = {
   root: 'https://echo.getpostman.com',
   headers: {
     Authorization: 'basic cG9zdG1hbjpwYXNzd29yZA=='
-  }
+  },
+  instance$: { options$: { } }
 };
 
 

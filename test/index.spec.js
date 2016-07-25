@@ -57,7 +57,7 @@ test('no children', t => {
 
   const client = api();
 
-  t.deepEqual(Object.keys(client), ['config$']);
+  t.deepEqual(Object.keys(client), [ 'config$', 'options$' ]);
 
 });
 

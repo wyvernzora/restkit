@@ -36,6 +36,8 @@ function RestKit(defaults, options, children) {
     /* Clone config, and apply default values */
     config = Object.assign({ }, defaults, config);
     const client = { config$: config };
+    config.instance$ = client;
+    client.options$ = options;
 
     /* Make sure all required config arguments are there */
     for (const k of (options.required || [ ])) {

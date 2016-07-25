@@ -8,6 +8,7 @@
  * configuration parameters supplied in the {spec} object.
  */
 const _            = require('lodash');
+const Debug        = require('debug')('restkit:endpoint');
 const Request      = require('request-promise');
 const UrlSubst     = require('./util/url-subst');
 
@@ -109,12 +110,14 @@ function Endpoint(config, {
       .value();
 
     /* Run the pre-request hook now */
+    run(fn, config.instance$.options$.pre, req);
     run(fn, config.pre, req);
     run(fn, pre, req);
 
     /* Send out the request */
     let response;
     try {
+      Debug(req);
       response = await Request(req);
     } catch (err) {
       run(fn, error, err, response);
@@ -122,6 +125,7 @@ function Endpoint(config, {
     }
 
     /* Run the post-request hooks now */
+    run(fn, config.instance$.options$.post, response);
     run(fn, config.post, response);
     run(fn, post, response);
 
