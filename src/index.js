@@ -32,19 +32,19 @@ function RestKit(defaults, options, children) {
   return function(config = { }) {
 
     /* Clone config, and apply default values */
-    config = _.assign({ }, defaults, config);
+    config = Object.assign({ }, defaults, config);
     const client = { config$: config };
-
-    /* Run the oncreate() hook */
-    if (typeof options.oncreate === 'function') {
-      options.oncreate.call(client, client);
-    }
 
     /* Make sure all required config arguments are there */
     for (const k of (options.required || [ ])) {
       if (typeof config[k] === 'undefined') {
         throw new Error(`Missing required config parameter '${k}'`);
       }
+    }
+
+    /* Run the oncreate() hook */
+    if (typeof options.oncreate === 'function') {
+      options.oncreate.call(client, client);
     }
 
     /* Build the API in question */
