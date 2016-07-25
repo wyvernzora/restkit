@@ -4,7 +4,6 @@
  * @author  Denis Luchkin-Zhou <denis@ricepo.com>
  * @license MIT
  */
-const _            = require('lodash');
 const Resource     = require('./resource');
 const Endpoint     = require('./endpoint');
 
@@ -18,9 +17,12 @@ function RestKit(defaults, options, children) {
   }
 
   /* Default headers */
-  if (!defaults.headers) {
-    defaults.headers = { };
-  }
+  defaults = Object.assign({ }, {
+    headers: { },
+    params: { },
+    query: { },
+    body: { }
+  }, defaults);
 
   /* {options} is optional */
   if (!children) {

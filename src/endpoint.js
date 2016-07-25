@@ -36,11 +36,9 @@ function Endpoint(config, {
    * Support array query
    */
   if (_.isArray(query)) {
-    query = _
-      .chain(query)
+    query = query
       .map(i => ({ [i]: i }))
-      .reduce(_.assign)
-      .value();
+      .reduce(Object.assign);
   }
 
 
@@ -82,7 +80,7 @@ function Endpoint(config, {
     const req = {
       method,
       json: true,
-      uri: template(data),
+      uri: template(Object.assign({ }, config.params, data)),
       headers: options.headers || { },
       resolveWithFullResponse: true
     };
@@ -99,6 +97,7 @@ function Endpoint(config, {
       .chain(data)
       .omit(...template.params)
       .omit(...Object.keys(query))
+      .defaults(config.body)
       .value();
 
     /* Prepare the query string */
@@ -106,6 +105,7 @@ function Endpoint(config, {
       .chain(data)
       .pick(...Object.keys(query))
       .mapKeys((v, k) => query[k])
+      .defaults(config.query)
       .value();
 
     /* Run the pre-request hook now */
@@ -134,6 +134,7 @@ function Endpoint(config, {
    * Attach parent config to the fn itself
    */
   fn.config$ = config;
+  fn.template$ = template;
 
 
   return fn.bind(fn);
