@@ -124,6 +124,8 @@ function Endpoint(config, {
       response = await Request(req);
     } catch (err) {
       run(fn, error, err, response);
+      run(fn, config.error, err, response);
+      run(fn, config.instance$.options$.error, err, response);
       throw err; // Just in case we did not throw from error handler
     }
 

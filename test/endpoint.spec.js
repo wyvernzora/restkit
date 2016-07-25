@@ -161,13 +161,13 @@ test('error hook', async t => {
 test('error hook w/out rethrow', async t => {
 
   const ep = Endpoint(config, {
-    path: '/statua/:id',
+    path: '/status/:id',
     params: ['id']
   });
 
   const r = ep(404);
 
-  t.throws(r);
+  t.throws(r, '404 - {"status":404}');
 
 });
 
