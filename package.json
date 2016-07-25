@@ -4,7 +4,7 @@
   "description": "Tool kit for creating REST API clients",
   "main": "lib/index.js",
   "scripts": {
-    "test": "ava"
+    "test": "./node_modules/.bin/ava"
   },
   "repository": {
     "type": "git",
