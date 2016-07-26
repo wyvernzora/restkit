@@ -11,94 +11,261 @@ RESTkit attempts to provide a minimalistic framework for creating RESTful API cl
 need to worry about service-specific logic, while all plumbing and stuff is taken care of for you.
 
 
-## Getting Started
+# Getting Started
 ```sh
 $ npm install rest-kit --save
 ```
-
-Then, in any JS file:
 ```js
 const RestKit = require('rest-kit');
+```
 
-module.exports = RestKit({
-  root: 'https://api.example.com/v1',
-  headers: { }
+
+Creating an API binding library is as easy as supplying a few bits of information
+to the RestKit.
+
+```js
+
+RestKit({
+  root: 'https://api.example.com/v1'
 }, {
-  auth: RestKit.Resource({
-    login: {
-      method: 'POST',
-      path: '/auth'
-    }
-  })
+  auth: RestKit.Resource({ ... })
 });
 ```
 
-## Documentation
+# RestKit.Endpoint()
 
-### `RestKit(defaults, [options,] resources)`
-`RestKit` function generates a factory function for API binding instances.
+An *endpoint* is a single method exposed by the REST API. For example, `DELETE /record/:id` is
+an endpoint. Endpoints are created using `RestKit.Endpoint` function, though normally you wouldn't
+need to do that yourself.
 
-#### `defaults.root`
-*Required* Specifies the default API root URI. Unless overridden during instance creation,
-all API calls are by default based on this URI.
+```js
+const endpoint = RestKit.Endpoint(config, spec);
+```
 
-#### `defaults.headers`
-*Optional* A hash of headers to include with every request. For example, a good fit here would be
-`User-Agent` header.
+Every endpoint is described by an object that lets RESTkit know how to call it. Following are
+properties supported by `RestKit.Endpoint`.
 
-#### `options.required`
-*optional* An array of configuration parameters that are required during instance creation.
-For example, if the API requires an authentication token, which is expected in the `token`
-property, then specifying `options.required` as `[ 'token' ]` would make sure the user supplies
-a token when creating API client.
+## path
+Required.
 
-#### `options.oncreate`
-*optional* A function that is called on creation of every instance. The function receives one
-argument, which is the API client instance that is being created. Function context is also the
-client instance.
+Path portion of the API URL, in addition to the API root specified in `config` during instantiation.
+`path` is **joined** to the API root url, therefore the preceding slash is ignored, and relative
+paths will not work.
 
-#### `resources`
-*optional* A hash of resource names to Resource objects that represent the RESTful API.
+```js
+RestKit.Endpoint(config, {
+  path: '/records'
+});
+```
 
-### `RestKit.Resource(spec, [children])`
-`RestKit.Resource` is a group of API calls that are organized together. For example, the login and
-logout actions can be organized into an `auth` resource. This function generates a factory function, which takes specific configuration provided during instantiation.
 
-#### `spec`
-*required* A JavaScript object describing the resource and endpoints it contains. Keys are method
-names, values are converted into `RestKit.Endpoint` objects.
+## method
+Optional, default value: `GET`.
 
-#### `children`
-*optional* Sub-resources that should be attached to current one. For example, user profile and
-business profile resources can be organized as `user.profile` and `business.profile`.
+Specifies the HTTP method that should be used when calling the endpoint.
 
-### `RestKit.Endpoint(config, spec)`
-`RestKit.Endpont` represents one single RESTful action, and returns an async function that calls
-the specified endpoint.
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  method: 'POST'
+});
+```
 
-#### `config`
-The configuration object passed down by the user.
 
-#### `spec.path`
-*required* The path of the API endpoint. The preceding slash `/` is ignored. May contain
-placeholders in the format of `:identifier`, which are interpolated from arguments when called.
+## query
+Optional, default value: `{ }`
 
-#### `params`
-*optional* An array of parameters that are required, and are supplied by called as function
-arguments in the order.
+Specifies mapping from parameters to query parameters. RESTkit endpoints do not make distinction
+between URL parameters, query parameters and request body. Everything is handled for the user.
+Listing query parameters here lets RESTkit know that these parameters are meant for query string.
 
-#### `query`
-*optional* A mapping of argument properties to respective query parameters. Properties listed
-here are removed from request body.
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  query: {
+    id: 'record_id'
+  }
+});
+```
 
-#### `method`
-*optional* HTTP method used for calling the API endpoint. Default value is `GET`.
+The reason it's an object rather than array is because query parameter names can be long and using
+notation incompatible with the project styling. Providing a mapping would allow users to use shorter
+parameter names. In the example above, if user calls `records({ id: 'foo' })`, the URL will eventually
+become `/records?record_id=foo`.
 
-#### `pre`, `post`, `error`
-*optional* Funcions or arrays of functions that are called before and after request, and when
-there is an error. The context of these functions exposes a `config$` property which can be
-used for modifying global configuration.
+If you only need to specify query parameters, but choose not to use name mapping, you can always
+pass in an array, and it will be expanded into appropriate mapping.
 
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  query: ['record_id']
+});
+```
+
+
+## params
+Optional, default value: `[ ]`
+
+Specifies required parameters that are accepted as function arguments. All parameters specified here
+are required, and omitting them will trigger an error.
+
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  params: ['id']
+});
+
+records(123);
+```
+
+Of course, parameters that are listed in `query` can also be listed here.
+
+
+## pre
+Optional, default value: `(req) => { }`
+
+Provides a function hook that is executed *before* sending the request, but *after* all parameters
+are processed and defaults are applied. The function accepts a single argument `req`, which is the
+request data with all headers and parameters (see `request-promise` for more).
+
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  pre: (req) => { req.headers['User-Agent'] = 'RESTkit/1.0'; }
+});
+```
+
+
+## post
+Optional, default value: `(res) => { }`
+
+Provides a function hook that is executed *after* receiving the response. The function accepts a
+single argument `res`, which is the *complete response* received from `request-promise`. This is
+your opportunity to modify response body before it is returned from the endpoint function.
+
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  pre: (req) => { req.headers['User-Agent'] = 'RESTkit/1.0'; }
+});
+```
+
+
+## error
+Optional, default value: `(err, res) => { }`
+
+Provides a function hook that is executed when there is an error. The function accepts two arguments.
+`err` is the Error object caught during HTTP call, and `res` is the response object. This is your
+opportunity to throw another error. If you don't, the original error will be thrown.
+
+It is **impossible** to silence the error.
+
+```js
+RestKit.Endpoint(config, {
+  path: '/records',
+  error: (err, res) => { throw new Error(`OOPS: ${res.body.message}`); }
+});
+```
+
+
+# RestKit.Resource()
+
+A *resource* is a group of API endpoints that serve related purposes. You can think of them
+as of directories, whereas in the API library they will be grouped under the same property.
+
+For example:
+```js
+const auth = {
+  login: {
+    method: 'POST',
+    path: '/auth',
+    params: [ 'username', 'password' ]
+  },
+  logout: {
+    method: 'DELETE',
+    path: '/auth'
+  }
+};
+
+const api = RestKit({
+  root: 'https://api.example.com/v1'
+}, {
+  auth: RestKit.Resource(auth)
+})
+```
+
+The keys of the resource object will become function names, while values are objects describing
+corresponding endpoints (see *Describing Endpoints* for more).
+You can then call the API endpoints you just described like this:
+
+```js
+const client = api();
+
+await client.auth.login('user', 'password');
+await client.auth.logout();
+```
+
+
+# RestKit()
+
+Once you have all your resources ready to go, you can export the API client factory by simply
+calling `RestKit` and providing a few pieces configuration. For example:
+
+```js
+module.exports = RestKit({
+  root: 'https://api.example.com/v1'
+}, {
+  required: ['token']
+}, {
+  auth: RestKit.Resource(auth)
+})
+```
+
+There are additional options available for more advanced configuration of RESTkit. `RESTkit`
+accepts three arguments, which are the following:
+
+## defaults
+Required.
+
+Specifies default configuration values that can be overwritten by the user. Since you can access
+the `config` value from various hooks, you can put anything here.
+
+### defaults.root
+Required.
+
+This value specifies the root URI of the API.
+
+
+### defaults.headers
+Optional, default value: `{ }`
+
+Specifies a hash of headers that are applied to every API call. Note that if user specifies
+`config.headers` during API client creation, this value will be overwritten.
+
+
+### defaults.params
+Optional, default value: `{ }`
+
+Specifies URL parameters that are applied to every API call. Note that if user specifies
+`config.params` during API client creation, this value will be overwritten.
+
+
+### defaults.query
+Optional, default value: `{ }`
+
+Specifies query parameters that are applied to every API call. Note that if user specifies
+`config.query` during API client creation, this value will be overwritten.
+
+
+### defaults.body
+Optional, default value: `{ }`
+
+Specifies request body parameters that are applied to every API call. Note that if user specifies
+`config.body` during API client creation, this value will be overwritten.
+
+
+##
 
 ## More Examples
 
@@ -112,7 +279,7 @@ const api = RestKit({
   headers: { }
 }, {
   required: ['token'],
-  oncreate: function() {
+  oncreate() {
     this.config$.headers.Authorization = `token ${this.config$.token}`;
   }
 }, {
@@ -121,6 +288,10 @@ const api = RestKit({
       method: 'POST',
       path: '/auth',
       params: [ 'username', 'password' ]
+    },
+    logout: {
+      method: 'DELETE',
+      path: '/auth'
     }
   })
 });
