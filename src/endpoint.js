@@ -15,6 +15,7 @@ const UrlSubst     = require('./url-subst');
 
 function Endpoint(config, {
   path,
+  body             = { },
   params           = [ ],
   query            = { },
   method           = 'GET',
@@ -96,13 +97,16 @@ function Endpoint(config, {
       }
     }
 
-    /* Prepare the request body */
-    req.body = _
-      .chain(data)
-      .omit(...template.params)
-      .omit(...Object.keys(query))
-      .defaults(config.body)
-      .value();
+    /* Prepare the request body unless body is falsy */
+    if (body) {
+      req.body = _
+        .chain(data)
+        .omit(...template.params)
+        .omit(...Object.keys(query))
+        .defaults(body)
+        .defaults(config.body)
+        .value();
+    }
 
     /* Prepare the query string */
     req.qs = _
