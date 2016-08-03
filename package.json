@@ -1,6 +1,6 @@
 {
   "name": "rest-kit",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Tool kit for rapid development of REST API bindings.",
   "main": "lib/index.js",
   "files": [
