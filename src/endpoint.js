@@ -15,6 +15,7 @@ const UrlSubst     = require('./url-subst');
 
 function Endpoint(config, {
   path,
+  root,
   body             = { },
   params           = [ ],
   query            = { },
@@ -31,7 +32,7 @@ function Endpoint(config, {
   /**
    * Build the actual endpoint path
    */
-  const template = UrlSubst(config.root, path);
+  const template = UrlSubst(root || config.root, path);
 
 
   /**
