@@ -117,9 +117,9 @@ function Endpoint(config, {
       .value();
 
     /* Run the pre-request hook now */
-    run(fn, config.instance$.options$.pre, req);
-    run(fn, config.pre, req);
-    run(fn, pre, req);
+    await run(config.instance$, config.instance$.options$.pre, req);
+    await run(config.instance$, config.pre, req);
+    await run(config.instance$, pre, req);
 
     /* Send out the request */
     let response;
@@ -127,16 +127,16 @@ function Endpoint(config, {
       Debug(req);
       response = await Request(req);
     } catch (err) {
-      run(fn, error, err, response);
-      run(fn, config.error, err, response);
-      run(fn, config.instance$.options$.error, err, response);
+      await run(config.instance$, error, err, response);
+      await run(config.instance$, config.error, err, response);
+      await run(config.instance$, config.instance$.options$.error, err, response);
       throw err; // Just in case we did not throw from error handler
     }
 
     /* Run the post-request hooks now */
-    run(fn, config.instance$.options$.post, response);
-    run(fn, config.post, response);
-    run(fn, post, response);
+    await run(config.instance$, config.instance$.options$.post, response);
+    await run(config.instance$, config.post, response);
+    await run(config.instance$, post, response);
 
 
     return response.body;
@@ -158,11 +158,11 @@ module.exports = Endpoint;
 /**
  * Runs a series of hook function with the specified context.
  */
-function run(context, hook, ...args) {
+async function run(context, hook, ...args) {
   if (!hook) { return; }
   hook = [].concat(hook);
 
   for (const f of hook) {
-    f.call(context, ...args);
+    await f.call(context, ...args);
   }
 }
